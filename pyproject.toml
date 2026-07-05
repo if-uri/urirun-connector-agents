@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "urirun-connector-agents"
+version = "0.1.0"
+description = "One agent:// surface over every installed AI coding tool (Claude Code, Codex, opencode, Aider, Ollama, …). URI+MCP+A2A+OpenAPI+CLI from one decorator."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Tom Sapletta" }]
+dependencies = ["urirun>=0.4.14"]
+[project.scripts]
+urirun-agents = "urirun_connector_agents.core:main"
+[project.entry-points."urirun.bindings"]
+agents = "urirun_connector_agents.core:urirun_bindings"
+[tool.setuptools.packages.find]
+include = ["urirun_connector_agents*"]
