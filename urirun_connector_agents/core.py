@@ -73,6 +73,28 @@ def tools_list() -> dict[str, Any]:
                preferred=(headless[0] if headless else None))
 
 
+@conn.handler("executors/query/list", isolated=False,
+              meta={"label": "IFURI-200: wykonawcy headless dostępni jako fallback (agent:// executor chain)"})
+def executors_query_list() -> dict[str, Any]:
+    avail = _available()
+    headless = [a for a in _PREF if a in avail and avail[a]["headless"]]
+    return _ok(action="executors-list", executors=headless, count=len(headless),
+               fallback_ready=bool(headless), preferred=(headless[0] if headless else None))
+
+
+@conn.handler("executor/query/health", isolated=False,
+              meta={"label": "IFURI-200: zdrowie wykonawcy — czy agent:// może wykonać fallback"})
+def executor_query_health(agent: str = "") -> dict[str, Any]:
+    avail = _available()
+    headless = [a for a in _PREF if a in avail and avail[a]["headless"]]
+    if agent:
+        ok = agent in avail and avail[agent]["headless"]
+        return _ok(action="executor-health", agent=agent, healthy=ok,
+                   reason="dostępny headless" if ok else "brak/gui-only")
+    return _ok(action="executor-health", healthy=bool(headless), executors=headless,
+               reason="fallback gotowy" if headless else "BRAK wykonawcy → eskalacja human")
+
+
 @conn.handler("task/command/run", isolated=True,
               meta={"label": "Run a coding task via an AI tool (agent=auto picks the best installed headless one)"})
 def task_run(prompt: str = "", agent: str = "auto", cwd: str = "", model: str = "",
