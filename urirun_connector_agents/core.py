@@ -30,14 +30,16 @@ _ADAPTERS: dict[str, dict[str, Any]] = {
     "claude":   {"bin": "claude",   "argv": lambda p, m: ["claude", "-p", p], "gui": False, "desc": "Claude Code (print mode)"},
     "codex":    {"bin": "codex",    "argv": lambda p, m: ["codex", "exec", p], "gui": False, "desc": "OpenAI Codex CLI (exec)"},
     "opencode": {"bin": "opencode", "argv": lambda p, m: ["opencode", "run", p], "gui": False, "desc": "opencode (run)"},
-    "aider":    {"bin": "aider",    "argv": lambda p, m: ["aider", "--message", p, "--yes-always", "--no-auto-commits"], "gui": False, "desc": "Aider"},
+    "aider":    {"bin": "aider",    "argv": lambda p, m: (["aider", "--message", p, "--yes-always", "--no-auto-commits"]
+                                                          + (["--model", m] if m else [])),
+                 "gui": False, "desc": "Aider (OpenRouter via --model)"},
     "ollama":   {"bin": "ollama",   "argv": lambda p, m: ["ollama", "run", m or "llama3", p], "gui": False, "desc": "Ollama (local model)"},
     "qoder":    {"bin": "qoder",    "argv": None, "gui": True, "desc": "Qoder IDE (GUI)"},
     "cursor":   {"bin": "cursor",   "argv": None, "gui": True, "desc": "Cursor IDE (GUI)"},
     "gemini":   {"bin": "gemini",   "argv": lambda p, m: ["gemini", "-p", p], "gui": False, "desc": "Gemini CLI"},
 }
-# preference order for auto-selection (headless, agentic first)
-_PREF = ("claude", "codex", "opencode", "aider", "gemini", "ollama")
+# preference order for auto-selection (headless, OpenRouter-friendly first)
+_PREF = ("aider", "claude", "codex", "opencode", "gemini", "ollama")
 
 
 def _ok(**kw: Any) -> dict[str, Any]:
